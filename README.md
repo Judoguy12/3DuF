@@ -3,7 +3,7 @@ User-friendly CAD for microfluidic devices.
 
 ## Try it out
 
-[http://cidarlab.github.io/3DuF](http://cidarlab.github.io/3DuF)
+[http://heuckroth.com/3DuF](http://heuckroth.com/3DuF)
 
 ## Usage
 
