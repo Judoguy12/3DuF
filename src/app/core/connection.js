@@ -583,7 +583,7 @@ export default class Connection {
             //Setting this value to origin
             params["start"] = [0, 0];
         }
-        if (!params.hasOwnProperty("end")) {
+        if (!Object.hasOwnProperty("end", params)) {
             //Setting this value to origin
             params["end"] = [0, 0];
         }
