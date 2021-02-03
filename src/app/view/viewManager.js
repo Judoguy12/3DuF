@@ -1060,6 +1060,7 @@ export default class ViewManager {
                     Registry.viewManager.switchTo2D();
                 } catch (error) {
                     console.error(error.message);
+                    console.trace(error.stack);
                     alert("Unable to parse the design file, please ensure that the file is not corrupted:\n" + error.message);
                 }
             };
