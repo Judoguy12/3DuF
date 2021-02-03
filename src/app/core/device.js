@@ -532,6 +532,32 @@ export default class Device {
             this.__connections.push(connectiontoload);
         }
     }
+
+    __loadLayersFromInterchangeV1(layers){
+
+        //Generate all the layer block ID's first
+        let layerblockids = [];
+
+        for(let layer of layers){
+            if(!layerblockids.includes(layer.group)){
+                layerblockids.push(layer.group);
+            }
+        }
+
+        //For each layer block ID, we generate the layers
+        for(let layerblockid of layerblockids){
+            for(let layer of layers){
+                if(layerblockid == layer.group){
+                    let layerobject = Layer.fromInterchangeV1(layer);
+                    this.addLayer(layerobject);
+                }
+            }
+        }
+        
+
+    }
+
+
     /**
      * Converts the properties of the device to JSON 
      * @returns {JSON} Returns a JSON format with the properties of the device
@@ -725,6 +751,7 @@ export default class Device {
         //TODO: Use these two generate a rat's nest
         newDevice.__loadComponentsFromInterchangeV1(json.components);
         newDevice.__loadConnectionsFromInterchangeV1(json.connections);
+        newDevice.__loadLayersFromInterchangeV1(json.layers);
 
         let valve_map, valve_type_map;
         //Import ValveMap
@@ -760,12 +787,24 @@ export default class Device {
         if (json.hasOwnProperty("features")) {
             newDevice.__loadFeatureLayersFromInterchangeV1(json.features);
         } else {
-            //We need to add a default layer
-            let newlayer = new Layer(null, "flow"+this.__layerBlockIndex.toString(), "FLOW", this.__layerBlockIndex.toString());
-            newDevice.addLayer(newlayer);
-            newlayer = new Layer(null, "control"+this.__layerBlockIndex.toString(), "CONTROL", this.__layerBlockIndex.toString());
-            newDevice.addLayer(newlayer);
-            this.__layerBlockIndex += 1;
+            // // //We need to add a default layer
+            // // let newlayer = new Layer(null, "flow"+this.__layerBlockIndex.toString(), "FLOW", this.__layerBlockIndex.toString());
+            // // newDevice.addLayer(newlayer);
+            // // newlayer = new Layer(null, "control"+this.__layerBlockIndex.toString(), "CONTROL", this.__layerBlockIndex.toString());
+            // // newDevice.addLayer(newlayer);
+            // // this.__layerBlockIndex += 1;
+            // // TODO - We go though the layers and create a collection of layerblock ID's and then start creating all the layers based
+            // // on the different layers. Since they're typically just called control and flow this should be fairly simple
+            // let layerblockids = [];
+            // if (Object.hasOwnProperty("layers", json)){
+            //     for(let layer of json["layers"]){
+            //         if(!layerblockids.includes(layer.group)){
+            //             layerblockids.push(layer.group);
+            //         }
+            //     }
+            // }else{
+            //     throw new Error("Incoming JSON has no saved layers, incorrect Parchmint Format");
+            // }
         }
 
         //Updating cross-references

@@ -138,7 +138,7 @@ export default class FeatureSet {
      * @return {string|null}
      */
     getTypeForMINT(minttype) {
-        let checkmint = minttype.replace(/\s/g, '');
+        let checkmint = minttype;
         for (let key in this.__library) {
             if (checkmint == this.__library[key].object.mint) {
                 return key;
