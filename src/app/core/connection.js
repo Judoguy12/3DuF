@@ -477,15 +477,15 @@ export default class Connection {
         }
 
         //Check if the params have the other unique elements necessary otherwise add them as null
-        if (!params.hasOwnProperty("start")) {
+        if (!Object.hasOwnProperty("start", params)) {
             //Setting this value to origin
             params["start"] = [0, 0];
         }
-        if (!params.hasOwnProperty("end")) {
+        if (!Object.hasOwnProperty("end", params)) {
             //Setting this value to origin
             params["end"] = [0, 0];
         }
-        if (!params.hasOwnProperty("wayPoints")) {
+        if (!Object.hasOwnProperty("wayPoints", params)) {
             //TODO: setting a single waypoint at origin
             params["wayPoints"] = [
                 [0, 0],
@@ -532,6 +532,116 @@ export default class Connection {
 
         return connection;
     }
+
+
+    static fromInterchangeV1_1(device, json) {
+        // let set;
+        // if (json.hasOwnProperty("set")) set = json.set;
+        // else set = "Basic";
+        // //TODO: This will have to change soon when the thing is updated
+        // throw new Error("Need to implement Interchange V1 Import for component object");
+        // //return Device.makeFeature(json.macro, set, json.params, json.name, json.id, json.type);
+        let name = json.name;
+        let id = json.id;
+        let entity = json.entity;
+        let params = {};
+        for (let key in json.params) {
+            // console.log("key:", key, "value:", json.params[key]);
+            // let paramobject = Parameter.generateConnectionParameter(key, json.params[key]);
+            params[key] = json.params[key];
+        }
+
+        //Check if the params have the other unique elements necessary otherwise add them as null
+        let flag = false;
+        // TODO - Modify this for later, for now copy the top level waypoints to params
+        if (json.hasOwnProperty("waypoints")){
+            flag = true;
+            params["wayPoints"] = json.waypoints;
+
+            if (!params.hasOwnProperty("start")) {
+                //Setting this value to origin
+                params["start"] = json.waypoints[0];
+            }
+            if (!params.hasOwnProperty("end")) {
+                //Setting this value to origin
+                params["end"] = json.waypoints[json.waypoints.length - 1];
+            }
+    
+            // Generate the segments
+            if (!params.hasOwnProperty("segments")) {
+                let ret = [];
+                let waypointscopy = json.waypoints;
+                for (let i = 0; i < waypointscopy.length - 1; i++) {
+                    let segment = [waypointscopy[i], waypointscopy[i + 1]];
+                    ret.push(segment);
+                }
+                params["segments"] = ret
+                console.warn("Check to see if the segments need to be generated");
+            }
+        }
+
+
+        if (!params.hasOwnProperty("start")) {
+            //Setting this value to origin
+            params["start"] = [0,0];
+        }
+        if (!params.hasOwnProperty("end")) {
+            //Setting this value to origin
+            params["end"] = [0,0];
+        }
+
+
+        if (!params.hasOwnProperty("wayPoints")) {
+            //TODO: setting a single waypoint at origin
+            params["wayPoints"] = [
+                [0, 0],
+                [1, 2]
+            ];
+        }
+        if (!params.hasOwnProperty("segments")) {
+            //TODO: Setting a default segment from origin to origin
+            params["segments"] = [
+                [
+                    [0, 0],
+                    [0, 0]
+                ],
+                [
+                    [0, 0],
+                    [0, 0]
+                ]
+            ];
+        }
+        let definition = Registry.featureSet.getDefinition("Connection");
+        let paramstoadd = new Params(params, definition.unique, definition.heritable);
+
+        let connection = new Connection(entity, paramstoadd, name, entity, id);
+        if(flag){
+            connection.routed = true;
+        }
+        if (json.hasOwnProperty("source")) {
+            if (json.source != null && json.source != undefined) {
+                connection.setSourceFromJSON(device, json.source);
+            }
+        }
+        if (json.hasOwnProperty("sinks")) {
+            if (json.sinks != null && json.sinks != undefined) {
+                for (let i in json.sinks) {
+                    let sink = json.sinks[i];
+                    connection.addSinkFromJSON(device, sink);
+                }
+            }
+        }
+        if (json.hasOwnProperty("paths")) {
+            if (json.paths != null && json.paths != undefined) {
+                for (let i in json.paths) {
+                    connection.addWayPoints(json.paths[i]);
+                }
+            }
+        }
+
+        return connection;
+    }
+
 
     /**
      * Goes through teh waypoints and generates the connection segments

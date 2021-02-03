@@ -519,6 +519,7 @@ export default class Device {
             this.__components.push(componenttoadd);
         }
     }
+
     /**
      * Loads connections to the device object
      * @param {Connection} connections Connections to add to the device
@@ -532,6 +533,21 @@ export default class Device {
             this.__connections.push(connectiontoload);
         }
     }
+
+    /**
+     * Loads connections to the device object
+     * @param {Connection} connections Connections to add to the device
+     * @memberof Device
+     * @returns {void}
+     */
+    __loadConnectionsFromInterchangeV1_1(connections) {
+        let connectiontoload;
+        for (let i in connections) {
+            connectiontoload = Connection.fromInterchangeV1_1(this, connections[i]);
+            this.__connections.push(connectiontoload);
+        }
+    }
+
 
     __loadLayersFromInterchangeV1(layers){
 
@@ -750,7 +766,7 @@ export default class Device {
         //newDevice.__loadLayersFromInterchangeV1(json.layers);
         //TODO: Use these two generate a rat's nest
         newDevice.__loadComponentsFromInterchangeV1(json.components);
-        newDevice.__loadConnectionsFromInterchangeV1(json.connections);
+        newDevice.__loadConnectionsFromInterchangeV1_1(json.connections);
         newDevice.__loadLayersFromInterchangeV1(json.layers);
 
         let valve_map, valve_type_map;
