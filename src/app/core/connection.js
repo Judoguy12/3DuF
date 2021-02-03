@@ -14,11 +14,11 @@ import ComponentPort from "./componentPort";
 export default class Connection {
     /**
      * Default Connection Constructor
-     * @param {String} type 
-     * @param {Params} params 
-     * @param {String} name 
-     * @param {String} mint 
-     * @param {String} id 
+     * @param {String} type
+     * @param {Params} params
+     * @param {String} name
+     * @param {String} mint
+     * @param {String} id
      */
     constructor(type, params, name, mint, id = Feature.generateID()) {
         this.__params = params;
@@ -146,29 +146,26 @@ export default class Connection {
         return output;
     }
 
-
     /**
-     * 
+     *
      */
-    __findLayerReference(){
+    __findLayerReference() {
         let layers = Registry.currentDevice.getLayers();
         let layerrefs;
         let layer;
-        for(let i in layers){
+        for (let i in layers) {
             layer = layers[i];
             //Check if the connectino is in layer then put it there
             let feature;
-            for(let key in layer.features){
+            for (let key in layer.features) {
                 feature = layer.features[key];
-                if(feature.referenceID == this.getID()){
+                if (feature.referenceID == this.getID()) {
                     layerrefs = layer.id;
                 }
             }
         }
         return layerrefs;
     }
-
-
 
     /**
      * Returns the ID of the component
@@ -533,7 +530,6 @@ export default class Connection {
         return connection;
     }
 
-
     static fromInterchangeV1_1(device, json) {
         // let set;
         // if (json.hasOwnProperty("set")) set = json.set;
@@ -554,11 +550,11 @@ export default class Connection {
         //Check if the params have the other unique elements necessary otherwise add them as null
         let flag = false;
         // TODO - Modify this for later, for now copy the top level waypoints to params
-        if (json.hasOwnProperty("waypoints")){
-            if(json.waypoints.length > 1){
-               flag = true; 
+        if (json.hasOwnProperty("waypoints")) {
+            if (json.waypoints.length > 1) {
+                flag = true;
             }
-            
+
             params["wayPoints"] = json.waypoints;
 
             if (!params.hasOwnProperty("start")) {
@@ -569,7 +565,7 @@ export default class Connection {
                 //Setting this value to origin
                 params["end"] = json.waypoints[json.waypoints.length - 1];
             }
-    
+
             // Generate the segments
             if (!params.hasOwnProperty("segments")) {
                 let ret = [];
@@ -578,21 +574,19 @@ export default class Connection {
                     let segment = [waypointscopy[i], waypointscopy[i + 1]];
                     ret.push(segment);
                 }
-                params["segments"] = ret
+                params["segments"] = ret;
                 console.warn("Check to see if the segments need to be generated");
             }
         }
 
-
         if (!params.hasOwnProperty("start")) {
             //Setting this value to origin
-            params["start"] = [0,0];
+            params["start"] = [0, 0];
         }
         if (!params.hasOwnProperty("end")) {
             //Setting this value to origin
-            params["end"] = [0,0];
+            params["end"] = [0, 0];
         }
-
 
         if (!params.hasOwnProperty("wayPoints")) {
             //TODO: setting a single waypoint at origin
@@ -618,7 +612,7 @@ export default class Connection {
         let paramstoadd = new Params(params, definition.unique, definition.heritable);
 
         let connection = new Connection(entity, paramstoadd, name, entity, id);
-        if(flag){
+        if (flag) {
             connection.routed = true;
         }
         if (json.hasOwnProperty("source")) {
@@ -644,7 +638,6 @@ export default class Connection {
 
         return connection;
     }
-
 
     /**
      * Goes through teh waypoints and generates the connection segments
@@ -681,7 +674,7 @@ export default class Connection {
 
     /**
      * Allows the user to add a sink to the connection
-     * @param {string} component 
+     * @param {string} component
      * @param {ComponentPort} port
      * @memberof Connection
      * @returns {void}
@@ -718,7 +711,7 @@ export default class Connection {
      * @param {string} componentid Component ID
      * @return {boolean} Returns true if any corresponding connection target is found
      * @memberof Connection
-     * 
+     *
      */
     tryDeleteConnectionTarget(componentid) {
         let ret = false;
@@ -751,7 +744,7 @@ export default class Connection {
     }
     /**
      * Merges connections
-     * @param {Connection} connection 
+     * @param {Connection} connection
      * @memberof Connection
      * @returns {void}
      */
@@ -768,8 +761,8 @@ export default class Connection {
     }
     /**
      * Converts from JSON format to connection object
-     * @param {Object} device 
-     * @param {JSON} json 
+     * @param {Object} device
+     * @param {JSON} json
      * @memberof Connection
      * @returns {void}
      */
@@ -779,8 +772,8 @@ export default class Connection {
     }
     /**
      * ?
-     * @param {Object} device 
-     * @param {JSON} json 
+     * @param {Object} device
+     * @param {JSON} json
      * @memberof Connection
      * @returns {void}
      */
