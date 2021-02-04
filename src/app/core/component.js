@@ -500,8 +500,13 @@ export default class Component {
         if (!params.hasOwnProperty("position")) {
             params["position"] = [0.0, 0.0];
         }
-
-        let paramstoadd = new Params(params, definition.unique, definition.heritable);
+        let paramstoadd;
+        try{
+            paramstoadd = new Params(params, definition.unique, definition.heritable);
+        }catch(e){
+            console.error("Could not generate parameters object for:", name, entity);
+            console.error(e.message);
+        }
         let typestring = Registry.featureSet.getTypeForMINT(entity);
         let component = new Component(typestring, paramstoadd, name, entity, id);
 
