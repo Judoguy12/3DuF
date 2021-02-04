@@ -1295,8 +1295,8 @@ export default class ViewManager {
 
         let technology = FeatureSets.getTechnologyDefinition(component.getType(), "Basic");
         let offset = technology.getDrawOffset(params_to_copy);
-        console.log("Offsets:", offset);
-        params_to_copy["position"] = [xpos + offset[0], ypos + offset[1]];
+        console.log("Offsets:", component.name, offset);
+        // params_to_copy["position"] = [xpos + offset[0], ypos + offset[1]];
         //Get default params and overwrite them with json params, this can account for inconsistencies
         let newFeature = Device.makeFeature(component.getType(), "Basic", params_to_copy);
 
@@ -1305,7 +1305,8 @@ export default class ViewManager {
         Registry.currentLayer.addFeature(newFeature);
 
         //Set the component position
-        component.updateComponetPosition([xpos + offset[0], ypos + offset[1]]);
+        // component.updateComponetPosition([xpos + offset[0], ypos+ offset[1]]);
+        component.updateComponetPosition([xpos, ypos]);
     }
 
     __generateDefaultConnectionRenders(connection) {
