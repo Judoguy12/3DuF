@@ -200,6 +200,26 @@ export default class FeatureSet {
         return ret;
     }
 
+    /**
+     * Returns the instance object for the 
+     *
+     * @param {*} typeString
+     * @returns
+     * @memberof FeatureSet
+     */
+    getTechnology(typeString){
+        if (!this.__library.hasOwnProperty(typeString)) {
+            typeString = this.getTypeForMINT(typeString);
+        }
+
+        if (!this.__library.hasOwnProperty(typeString)) {
+            console.error("Could not find the type in featureset definition !: " + typeString);
+            return null;
+        }
+
+        return this.__library[typeString].object;
+    }
+
     getRender3D(typeString) {
         return this.__render3D[typeString];
     }

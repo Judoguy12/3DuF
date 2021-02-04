@@ -555,7 +555,10 @@ export default class Connection {
         let flag = false;
         // TODO - Modify this for later, for now copy the top level waypoints to params
         if (json.hasOwnProperty("waypoints")){
-            flag = true;
+            if(json.waypoints.length > 1){
+               flag = true; 
+            }
+            
             params["wayPoints"] = json.waypoints;
 
             if (!params.hasOwnProperty("start")) {
