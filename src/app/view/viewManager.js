@@ -48,6 +48,8 @@ import { Examples } from "../index";
 import Feature from "../core/feature";
 import Layer from "../core/layer";
 import Component from "../core/component";
+import * as FeatureSets from "../featureSets";
+
 /**
  * View manager class
  */
@@ -1052,15 +1054,15 @@ export default class ViewManager {
             let reader = new FileReader();
             reader.onloadend = function(e) {
                 let result = this.result;
-                try {
+                // try {
                     result = JSON.parse(result);
                     Registry.viewManager.loadDeviceFromJSON(result);
                     Registry.viewManager.switchTo2D();
-                } catch (error) {
-                    console.error(error.message);
-                    console.trace(error.stack);
-                    alert("Unable to parse the design file, please ensure that the file is not corrupted:\n" + error.message);
-                }
+                // } catch (error) {
+                //     console.error(error.message);
+                //     console.trace(error.stack);
+                //     alert("Unable to parse the design file, please ensure that the file is not corrupted:\n" + error.message);
+                // }
             };
             try {
                 reader.readAsText(f);
@@ -1251,7 +1253,7 @@ export default class ViewManager {
             let component = components[i];
             let currentposition = component.getPosition();
             //TODO: Refine this logic, it sucks
-            if (currentposition[0] == 0 && currentposition == 0) {
+            if (currentposition[0] <= 0 && currentposition <= 0) {
                 if (!component.placed) {
                     this.__generateDefaultPlacementForComponent(component, xpos * (parseInt(i) + 1), ypos * (Math.floor(parseInt(i) / 5) + 1));
                 }
@@ -1262,8 +1264,18 @@ export default class ViewManager {
             }
         }
 
-        //TODO: Step 2 generate rats nest renders for all the components
+        // Generate the connection render for all the connections that are routed
+        let connections = this.currentDevice.getConnections();
+        for(let i in connections){
+            let connection = connections[i];
+            if(connection.routed){
+                //Since the connection is routed, put in the values here
+                this.__generateDefaultConnectionRenders(connection);
+            }
+        }
 
+        //TStep 2 generate rats nest renders for all the components
+        
         this.view.updateRatsNest();
         this.view.updateComponentPortsRender();
     }
@@ -1280,6 +1292,10 @@ export default class ViewManager {
 
         params_to_copy["position"] = [xpos, ypos];
 
+        let technology = FeatureSets.getTechnologyDefinition(component.getType(),  "Basic");
+        let offset = technology.getDrawOffset(params_to_copy);
+        console.log("Offsets:", offset);
+        params_to_copy["position"] = [xpos + offset[0], ypos + offset[1]];
         //Get default params and overwrite them with json params, this can account for inconsistencies
         let newFeature = Device.makeFeature(component.getType(), "Basic", params_to_copy);
 
@@ -1288,8 +1304,21 @@ export default class ViewManager {
         Registry.currentLayer.addFeature(newFeature);
 
         //Set the component position
-        component.updateComponetPosition([xpos, ypos]);
+        component.updateComponetPosition([xpos + offset[0], ypos+ offset[1]]);
     }
+
+    __generateDefaultConnectionRenders(connection){
+        let params_to_copy = connection.getParams().toJSON();
+
+        // throw new Error("Implement this, copy from connection tool")
+        // let definition = Registry.featureSet.getDefinition("Connection");
+        let feature = Device.makeFeature("Connection", "Basic", params_to_copy);
+
+        connection.addFeatureID(feature.getID());
+
+        Registry.currentLayer.addFeature(feature);
+    }
+
     /**
      * Generates a JSON format file to export it
      * @returns {void}
