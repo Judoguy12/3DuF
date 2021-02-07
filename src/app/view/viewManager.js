@@ -48,9 +48,8 @@ import { Examples } from "../index";
 import Feature from "../core/feature";
 import Layer from "../core/layer";
 import Component from "../core/component";
-
-import ControlCellPositionTool from "./tools/controlCellPositionTool";
 import * as FeatureSets from "../featureSets";
+import ControlCellPositionTool from "./tools/controlCellPositionTool";
 
 /**
  * View manager class
